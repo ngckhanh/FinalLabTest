@@ -1,7 +1,5 @@
 package components.controllers;
-/**
- * @author Ton Nu Ngoc Khanh - s3932105
- */
+
 import components.databases.DatabaseConnection;
 import components.entities.Customer;
 import components.entities.Order;
@@ -99,27 +97,6 @@ public class CustomerController {
             e.printStackTrace();
         }
     }
-
-//    public void deleteCustomer(int customerId) {
-//        String delete_order_item_sql = "DELETE FROM order_item WHERE customer_id = ?";
-//        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-//             PreparedStatement pstmt = connection.prepareStatement(delete_order_item_sql)) {
-//            pstmt.setInt(1, customerId);
-//            pstmt.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String sql = "DELETE FROM customer WHERE id = ?";
-//        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-//             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-//
-//            pstmt.setInt(1, customerId);
-//            pstmt.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public void deleteCustomer(int customerId) {
         try (Connection con = DriverManager.getConnection(url)){

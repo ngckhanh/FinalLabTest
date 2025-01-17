@@ -1,7 +1,5 @@
 package components;
-/**
- * @author Ton Nu Ngoc Khanh - s3932105
- */
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;

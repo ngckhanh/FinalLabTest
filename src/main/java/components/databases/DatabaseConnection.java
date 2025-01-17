@@ -1,7 +1,5 @@
 package components.databases;
-/**
- * @author Ton Nu Ngoc Khanh - s3932105
- */
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -33,7 +31,7 @@ public class DatabaseConnection {
         return instance;
     }
 
-    // Cai cua tui
+
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
