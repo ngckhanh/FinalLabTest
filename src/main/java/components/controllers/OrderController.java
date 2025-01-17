@@ -14,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 
+import static components.databases.DatabaseConnection.url;
+
 public class OrderController {
     public static ObservableList<Order> getAllOrders() {
         ObservableList<Order> orderList = FXCollections.observableArrayList();
@@ -21,7 +23,7 @@ public class OrderController {
                 "FROM orders o " +
                 "JOIN order_item oi ON o.id = oi.order_id";
 
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+        try (Connection connection = DriverManager.getConnection(url);
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 

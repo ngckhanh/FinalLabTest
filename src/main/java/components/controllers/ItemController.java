@@ -11,6 +11,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static components.databases.DatabaseConnection.url;
 public class ItemController {
 
     public static ObservableList<Item> getAllItems() {
@@ -70,43 +71,8 @@ public class ItemController {
         }
     }
 
-//    public void deleteItem(int itemId) {
-//        // Check if the item is referenced in the order_item table
-//        String checkSql = "SELECT COUNT(*) FROM order_item WHERE item_id = ?";
-//        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-//             PreparedStatement checkStmt = connection.prepareStatement(checkSql)) {
-//
-//            checkStmt.setInt(1, itemId);
-//            ResultSet rs = checkStmt.executeQuery();
-//            if (rs.next() && rs.getInt(1) > 0) {
-//                // Item is referenced, retrieve associated orders
-//                List<Order> associatedOrders = getOrdersByItemId(itemId);
-//                for (Order order : associatedOrders) {
-//                    // Assuming you have a method to get the customer by order
-//                    Customer customer = getCustomerByOrder(order);
-//                    if (customer != null) {
-//                        customer.removeOrder(order); // Remove the order from the customer
-//                    }
-//                }
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // Proceed to delete the item
-//        String sql = "DELETE FROM item WHERE id = ?";
-//        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-//             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-//
-//            pstmt.setInt(1, itemId);
-//            pstmt.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public void deleteItem(int itemId) {
-        try (Connection con = DriverManager.getConnection("jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003")) {
+        try (Connection con = DriverManager.getConnection(url)) {
             // Start a transaction
             con.setAutoCommit(false);
 
