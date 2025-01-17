@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static components.databases.DatabaseConnection.url;
+
 public class CustomerController {
     public static ObservableList<Customer> getAllCustomers() {
         ObservableList<Customer> customerList = FXCollections.observableArrayList();
@@ -120,7 +122,7 @@ public class CustomerController {
 //    }
 
     public void deleteCustomer(int customerId) {
-        try (Connection con = DriverManager.getConnection("jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003")) {
+        try (Connection con = DriverManager.getConnection(url)){
             // Start a transaction
             con.setAutoCommit(false);
 
