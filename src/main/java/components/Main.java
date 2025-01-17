@@ -1,7 +1,5 @@
 package components;
-/**
- * @author Ton Nu Ngoc Khanh - s3932105
- */
+
 import components.controllers.OrderController;
 import components.databases.DatabaseConnection;
 import java.sql.Connection;

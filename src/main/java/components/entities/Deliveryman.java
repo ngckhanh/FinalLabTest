@@ -1,7 +1,4 @@
 package components.entities;
-/**
- * @author Ton Nu Ngoc Khanh
- */
 
 import java.util.ArrayList;
 import java.util.List;

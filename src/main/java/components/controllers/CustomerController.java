@@ -1,7 +1,5 @@
 package components.controllers;
-/**
- * @author Ton Nu Ngoc Khanh - s3932105
- */
+
 import components.databases.DatabaseConnection;
 import components.entities.Customer;
 import components.entities.Order;
@@ -13,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static components.databases.DatabaseConnection.url;
 
 public class CustomerController {
     public static ObservableList<Customer> getAllCustomers() {
@@ -98,29 +98,8 @@ public class CustomerController {
         }
     }
 
-//    public void deleteCustomer(int customerId) {
-//        String delete_order_item_sql = "DELETE FROM order_item WHERE customer_id = ?";
-//        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-//             PreparedStatement pstmt = connection.prepareStatement(delete_order_item_sql)) {
-//            pstmt.setInt(1, customerId);
-//            pstmt.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String sql = "DELETE FROM customer WHERE id = ?";
-//        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-//             PreparedStatement pstmt = connection.prepareStatement(sql)) {
-//
-//            pstmt.setInt(1, customerId);
-//            pstmt.executeUpdate();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public void deleteCustomer(int customerId) {
-        try (Connection con = DriverManager.getConnection("jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003")) {
+        try (Connection con = DriverManager.getConnection(url)){
             // Start a transaction
             con.setAutoCommit(false);
 

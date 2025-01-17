@@ -1,7 +1,5 @@
 package components.controllers;
-/**
- * @author Ton Nu Ngoc Khanh - s3932105
- */
+
 import components.databases.DatabaseConnection;
 import components.entities.Customer;
 import components.entities.Deliveryman;

@@ -1,7 +1,5 @@
 package components.databases;
-/**
- * @author Ton Nu Ngoc Khanh - s3932105
- */
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,7 +8,7 @@ import java.sql.Statement;
 public class DatabaseConnection {
     private static DatabaseConnection instance;
     private static Connection connection;
-    private static final String url = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003";
+    public static final String url = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003";
     private static final String username = "postgres.drpxhqdjnldasbislbls";
     private static final String password = "Kh@nh762003";
 
@@ -33,7 +31,7 @@ public class DatabaseConnection {
         return instance;
     }
 
-    // Cai cua tui
+
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
