@@ -142,9 +142,20 @@ public class OrderView {
         });
 
         addButton.setOnAction(e -> {
-            if (totalPriceEdit.getText().isEmpty() || creationDatePicker.getValue() == null || customerIdEdit.getText().isEmpty() || deliverymanIdEdit.getText().isEmpty()) {
+            // Validate required fields
+            if (totalPriceEdit.getText().isEmpty() || creationDatePicker.getValue() == null ||
+                    customerIdEdit.getText().isEmpty() || deliverymanIdEdit.getText().isEmpty()) {
                 statusLabel.setText("All fields are required to add an order.");
-            } else {
+                return;
+            }
+
+            // Check if at least one item is added
+            if (itemListView.getItems().isEmpty()) {
+                statusLabel.setText("At least one item is required to add an order.");
+                return;
+            }
+
+            try {
                 Order order = new Order();
                 order.setTotalPrice(Double.parseDouble(totalPriceEdit.getText()));
                 order.setCreationDate(Date.valueOf(creationDatePicker.getValue()));
@@ -166,10 +177,79 @@ public class OrderView {
 
                 order.setCustomer(customer);
                 order.setDeliveryman(deliveryman);
+
                 orderController.addOrder(order);
                 resultArea.setText(orderController.getAllOrders().toString());
                 statusLabel.setText("Order added successfully.");
+            } catch (NumberFormatException ex) {
+                statusLabel.setText("Invalid number format for Total Price or IDs.");
+            } catch (Exception ex) {
+                statusLabel.setText("An error occurred while adding the order: " + ex.getMessage());
             }
+        });
+
+        updateButton.setOnAction(e -> {
+            // Validate required fields
+            if (idEdit.getText().isEmpty() || creationDatePicker.getValue() == null ||
+                    totalPriceEdit.getText().isEmpty()) {
+                statusLabel.setText("All fields are required to update an order.");
+                return;
+            }
+
+            // Check if at least one item is present
+            if (itemListView.getItems().isEmpty()) {
+                statusLabel.setText("At least one item is required to update an order.");
+                return;
+            }
+
+            try {
+                Order order = new Order();
+                order.setId(Integer.parseInt(idEdit.getText()));
+                order.setTotalPrice(Double.parseDouble(totalPriceEdit.getText()));
+                order.setCreationDate(Date.valueOf(creationDatePicker.getValue()));
+
+                List<Item> items = itemListView.getItems()
+                        .stream()
+                        .map(itemName -> itemController.getItemByName(itemName)) // Retrieve full Item object by name
+                        .filter(Objects::nonNull)
+                        .toList();
+                order.setItems(items);
+
+                Customer customer = customerController.getCustomerById(Integer.parseInt(customerIdEdit.getText()));
+                Deliveryman deliveryman = deliverymanController.getDeliverymanById(Integer.parseInt(deliverymanIdEdit.getText()));
+                if (customer == null || deliveryman == null) {
+                    statusLabel.setText("Invalid Customer ID or Deliveryman ID.");
+                    return;
+                }
+
+                order.setCustomer(customer);
+                order.setDeliveryman(deliveryman);
+
+                // Update the order
+                orderController.updateOrder(order);
+                resultArea.setText(orderController.getAllOrders().toString());
+                statusLabel.setText("Order updated successfully.");
+            } catch (NumberFormatException ex) {
+                statusLabel.setText("Invalid number format for Total Price or Order ID.");
+            } catch (Exception ex) {
+                statusLabel.setText("An error occurred while updating the order: " + ex.getMessage());
+            }
+        });
+
+        deleteButton.setOnAction(e -> {
+            if (idEdit.getText().isEmpty()) {
+                statusLabel.setText("Order ID field is required to delete an item.");
+            } else {
+                orderController.deleteOrder(Integer.parseInt(idEdit.getText()));
+                resultArea.setText(orderController.getAllOrders().toString());
+                statusLabel.setText("");
+            }
+        });
+
+        searchButton.setOnAction(e -> {
+            List<Order> result = orderController.searchOrders(searchEdit.getText());
+            resultArea.setText(result.toString());
+            statusLabel.setText("");
         });
 
         getAllButton.setOnAction(e -> {

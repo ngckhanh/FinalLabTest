@@ -120,28 +120,84 @@ public class OrderController {
         }
     }
 
-    public void updateOrder(Order order) {
-        String sql = "UPDATE orders SET total_price = ?, date = ?, customer_id = ? WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+    public static void updateOrder(Order order) {
+        String updateOrderQuery = "UPDATE orders SET total_price = ?, date = ?, customer_id = ?, deliveryman_id = ? WHERE id = ?";
+        String deleteOrderItemsQuery = "DELETE FROM order_item WHERE order_id = ?";
+        String insertOrderItemsQuery = "INSERT INTO order_item (order_id, item_id) VALUES (?, ?)";
 
-            pstmt.setDouble(1, order.getTotalPrice());
-            pstmt.setDate(2, new java.sql.Date(order.getCreationDate().getTime()));
-            pstmt.setInt(3, order.getCustomer().getId()); // Assuming the customer is set
-            pstmt.setInt(4, order.getId());
-            pstmt.executeUpdate();
+        try (Connection connection = DriverManager.getConnection(url)) {
+            // Start a transaction
+            connection.setAutoCommit(false);
+
+            try {
+                // Step 1: Update the order in the orders table
+                try (PreparedStatement updateStmt = connection.prepareStatement(updateOrderQuery)) {
+                    updateStmt.setDouble(1, order.getTotalPrice());
+                    updateStmt.setDate(2, new java.sql.Date(order.getCreationDate().getTime()));
+                    updateStmt.setInt(3, order.getCustomer().getId());
+                    updateStmt.setInt(4, order.getDeliveryman().getId());
+                    updateStmt.setInt(5, order.getId());
+                    updateStmt.executeUpdate();
+                }
+
+                // Step 2: Delete all existing items for the order in the order_item table
+                try (PreparedStatement deleteStmt = connection.prepareStatement(deleteOrderItemsQuery)) {
+                    deleteStmt.setInt(1, order.getId());
+                    deleteStmt.executeUpdate();
+                }
+
+                // Step 3: Re-insert the updated items into the order_item table
+                try (PreparedStatement insertStmt = connection.prepareStatement(insertOrderItemsQuery)) {
+                    for (Item item : order.getItems()) {
+                        insertStmt.setInt(1, order.getId()); // Use the existing order ID
+                        insertStmt.setInt(2, item.getId()); // Use the item's ID
+                        insertStmt.executeUpdate();
+                    }
+                }
+
+                // Commit the transaction
+                connection.commit();
+                System.out.println("Order updated successfully.");
+            } catch (SQLException e) {
+                // Rollback the transaction in case of an error
+                connection.rollback();
+                System.err.println("Transaction rolled back due to an error.");
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void deleteOrder(int orderId) {
-        String sql = "DELETE FROM orders WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        try (Connection con = DriverManager.getConnection(url)) {
+            // Start a transaction
+            con.setAutoCommit(false);
 
-            pstmt.setInt(1, orderId);
-            pstmt.executeUpdate();
+            try {
+                // Step 1: Delete references from the order_item table
+                String deleteOrderItemQuery = "DELETE FROM \"order_item\" WHERE \"order_id\" = ?";
+                try (PreparedStatement stmt = con.prepareStatement(deleteOrderItemQuery)) {
+                    stmt.setInt(1, orderId);
+                    stmt.executeUpdate();
+                }
+
+                // Step 2: Delete the order from the Order table
+                String deleteOrderQuery = "DELETE FROM \"orders\" WHERE \"id\" = ?";
+                try (PreparedStatement stmt = con.prepareStatement(deleteOrderQuery)) {
+                    stmt.setInt(1, orderId);
+                    stmt.executeUpdate();
+                }
+
+                // Commit the transaction
+                con.commit();
+                System.out.println("Order deleted successfully.");
+            } catch (SQLException e) {
+                // Rollback if any step fails
+                con.rollback();
+                System.err.println("Transaction rolled back due to an error.");
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
