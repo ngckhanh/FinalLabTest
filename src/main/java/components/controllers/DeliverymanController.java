@@ -6,10 +6,7 @@ import components.databases.DatabaseConnection;
 import components.entities.Customer;
 import components.entities.Deliveryman;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,12 +22,13 @@ import javafx.scene.control.TextField;
 
 public class DeliverymanController {
     public static ObservableList<Deliveryman> getAllDeliverymen() {
+        String url = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003";
         ObservableList<Deliveryman> deliverymanList = FXCollections.observableArrayList();
         String query = "SELECT d.*, o.id AS order_id " +
                 "FROM deliveryman d " +
                 "LEFT JOIN orders o ON d.id = o.deliveryman_id";
 
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+        try (Connection connection = DriverManager.getConnection(url);
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 
@@ -106,16 +104,42 @@ public class DeliverymanController {
     }
 
     public void deleteDeliveryman(int deliverymanId) {
-        String sql = "DELETE FROM deliveryman WHERE id = ?";
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement pstmt = connection.prepareStatement(sql)) {
+        // Connection string, replace with your actual database credentials if needed
+        String url = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003";
 
-            pstmt.setInt(1, deliverymanId);
-            pstmt.executeUpdate();
+        try (Connection con = DriverManager.getConnection(url)) {
+            // Start a transaction
+            con.setAutoCommit(false); // Disable auto-commit for transaction management
+
+            try {
+                // Step 1: Update orders to remove the deliveryman_id reference
+                String updateOrderQuery = "UPDATE \"orders\" SET \"deliveryman_id\" = NULL WHERE \"deliveryman_id\" = ?";
+                try (PreparedStatement stmt = con.prepareStatement(updateOrderQuery)) {
+                    stmt.setInt(1, deliverymanId);
+                    stmt.executeUpdate();
+                }
+
+                // Step 2: Delete the deliveryman from the deliveryman table
+                String deleteDeliverymanQuery = "DELETE FROM \"deliveryman\" WHERE \"id\" = ?";
+                try (PreparedStatement stmt = con.prepareStatement(deleteDeliverymanQuery)) {
+                    stmt.setInt(1, deliverymanId);
+                    stmt.executeUpdate();
+                }
+
+                // Commit the transaction after both steps
+                con.commit();
+                System.out.println("Deliveryman deleted successfully.");
+            } catch (SQLException e) {
+                // Rollback in case of an error during the transaction
+                con.rollback();
+                System.err.println("Transaction rolled back due to an error.");
+                e.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     public List<Deliveryman> searchDeliverymen(String keyword) {
         String sql = "SELECT * FROM deliveryman WHERE name LIKE ? OR phone_number LIKE ?";
