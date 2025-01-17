@@ -18,9 +18,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 
+import static components.databases.DatabaseConnection.url;
+
 public class DeliverymanController {
     public static ObservableList<Deliveryman> getAllDeliverymen() {
-        String url = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003";
         ObservableList<Deliveryman> deliverymanList = FXCollections.observableArrayList();
         String query = "SELECT d.*, o.id AS order_id " +
                 "FROM deliveryman d " +
@@ -102,9 +103,6 @@ public class DeliverymanController {
     }
 
     public void deleteDeliveryman(int deliverymanId) {
-        // Connection string, replace with your actual database credentials if needed
-        String url = "jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?user=postgres.drpxhqdjnldasbislbls&password=Kh@nh762003";
-
         try (Connection con = DriverManager.getConnection(url)) {
             // Start a transaction
             con.setAutoCommit(false); // Disable auto-commit for transaction management

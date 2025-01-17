@@ -21,7 +21,7 @@ public class CustomerController {
                 "FROM customer c " +
                 "LEFT JOIN orders o ON c.id = o.customer_id";
 
-        try (Connection connection = DatabaseConnection.getInstance().getConnection();
+        try (Connection connection = DriverManager.getConnection(url);
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
 

@@ -1,14 +1,10 @@
 package components;
 
-import components.controllers.OrderController;
 import components.databases.DatabaseConnection;
 import java.sql.Connection;
 
 public class Main {
     public static void main(String[] args) {
-
-        OrderController orderController = new OrderController();
-
         // Launch the GUI
         RestaurantManagementSystem.launchGUI(args);
 
